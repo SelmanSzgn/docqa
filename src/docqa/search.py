@@ -1,9 +1,8 @@
 import numpy as np
 
+
 def top_k(
-    query_vec: np.ndarray,
-    vecs: np.ndarray,
-    k:int
+    query_vec: np.ndarray, vecs: np.ndarray, k: int
 ) -> list[tuple[int, float]]:
     if k <= 0:
         raise ValueError(f"Value of k must be positive, k={k} was given.")
