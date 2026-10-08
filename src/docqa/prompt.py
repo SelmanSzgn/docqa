@@ -6,7 +6,7 @@ def build_prompt(question: str, chunks: list[Chunk]) -> str:
     context = "\n\n".join(blocks)
     return (
         "Answer the question using only the context below. "
-        'If the context does not contain the answer, say "I don\'t know".'
+        'If the context does not contain the answer, say "I don\'t know". '
         "Cite the sources you use in the form [source, p.N].\n\n"
         f"Context:\n{context}\n\n"
         f"Question: {question}"
