@@ -1,11 +1,10 @@
 import argparse
 from pathlib import Path
 
-from docqa.loader import extract_pages
 from docqa.chunking import chunk_pages
 from docqa.embeddings import embed_texts, load_model
+from docqa.loader import extract_pages
 from docqa.pipeline import answer
-
 
 size = 1000
 overlap = 200
@@ -22,4 +21,3 @@ chunks = chunk_pages(pages, args.pdf.name, size, overlap)
 model = load_model()
 vecs = embed_texts(model, [c.text for c in chunks])
 print(answer(question, chunks, vecs, model, k))
-

@@ -1,5 +1,7 @@
-from docqa.chunking import Chunk
 import numpy as np
+
+from docqa.chunking import Chunk
+
 
 def add_chunks(collection, chunks: list[Chunk], vecs: np.ndarray) -> None:
     ids = []
@@ -14,12 +16,12 @@ def add_chunks(collection, chunks: list[Chunk], vecs: np.ndarray) -> None:
         ids=ids,
         embeddings=embeddings,
         documents=documents,
-        metadatas=metadatas
+        metadatas=metadatas,
     )
 
 
 def query_chunks(collection, query_vec: np.ndarray, k: int) -> list[Chunk]:
-    res = collection.query(query_embeddings = [query_vec], n_results=k)
+    res = collection.query(query_embeddings=[query_vec], n_results=k)
     chunks = []
     for i in range(len(res["documents"][0])):
         text = res["documents"][0][i]
