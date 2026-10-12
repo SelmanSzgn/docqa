@@ -41,3 +41,12 @@ def ingest_pdf(
     vecs = embed_texts(model, [c.text for c in chunks])
     add_chunks(collection, chunks, vecs)
     return n_chunks
+
+
+def retrieve_pages(question: str, collection, model, k: int) -> list[int]:
+    if k <= 0:
+        raise ValueError(f"k must be positive; k={k} was given.")
+    q = embed_texts(model, [question])[0]
+    chunks = query_chunks(collection, q, k)
+    retrieved = [c.page for c in chunks]
+    return retrieved
