@@ -31,14 +31,16 @@ def answer_from_store(question: str, collection, model, k: int = 3) -> str:
 
 
 def ingest_pdf(
-    path: Path, collection, model, size: int = 1000, overlap: int = 200
+    path: Path, collection, model, size: int = 500, overlap: int = 100
 ) -> int:
     pages = extract_pages(path)
     chunks = chunk_pages(pages, path.name, size, overlap)
     n_chunks = len(chunks)
     if n_chunks == 0:
+        collection.delete(where={"source": path.name})
         return 0
     vecs = embed_texts(model, [c.text for c in chunks])
+    collection.delete(where={"source": path.name})
     add_chunks(collection, chunks, vecs)
     return n_chunks
 
