@@ -1,6 +1,7 @@
 import re
-from rank_bm25 import BM25Okapi
+
 import numpy as np
+from rank_bm25 import BM25Okapi
 
 
 def tokenize(text: str) -> list[str]:
@@ -19,7 +20,7 @@ def bm25_top_k(query: str, texts: list[str], k: int) -> list[int]:
 
     texts_tok = [tokenize(t) for t in texts]
     query_tok = tokenize(query)
-    
+
     if len(query_tok) == 0:
         return []
     if all([len(t) == 0 for t in texts_tok]):
@@ -33,5 +34,3 @@ def bm25_top_k(query: str, texts: list[str], k: int) -> list[int]:
         if scores[j] > 0:
             topk.append(int(j))
     return topk
-    
-

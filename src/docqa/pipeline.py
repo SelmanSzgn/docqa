@@ -4,6 +4,8 @@ import numpy as np
 
 from docqa.chunking import Chunk, chunk_pages
 from docqa.embeddings import embed_texts
+from docqa.fusion import rrf_fuse
+from docqa.lexical import bm25_top_k
 from docqa.llm import generate
 from docqa.loader import extract_pages
 from docqa.prompt import build_prompt
@@ -52,3 +54,35 @@ def retrieve_pages(question: str, collection, model, k: int) -> list[int]:
     chunks = query_chunks(collection, q, k)
     retrieved = [c.page for c in chunks]
     return retrieved
+
+
+def retrieve_chunks_hybrid(
+    question: str, collection, model, k: int, pool: int = 20
+) -> list[Chunk]:
+    if k <= 0:
+        raise ValueError(f"k must be positive; k={k} was given.")
+    if collection.count() == 0:
+        return []
+    data = collection.get()
+    n_chunks = collection.count()
+    chunks = []
+    for i in range(n_chunks):
+        text = data["documents"][i]
+        source = data["metadatas"][i]["source"]
+        page = data["metadatas"][i]["page"]
+        chunks.append(Chunk(text, source, page))
+    q = embed_texts(model, [question])[0]
+    ids_vec = collection.query(query_embeddings=[q], n_results=pool)["ids"][0]
+    texts = [c.text for c in chunks]
+    _indices = bm25_top_k(question, texts, pool)
+    ids_bm25 = [data["ids"][j] for j in _indices]
+    scores = rrf_fuse([ids_vec, ids_bm25], k)
+    best_chunks = []
+    for chunk_id in scores:
+        pos = 0
+        for i in range(n_chunks):
+            if data["ids"][i] == chunk_id:
+                break
+            pos += 1
+        best_chunks.append(chunks[pos])
+    return best_chunks
