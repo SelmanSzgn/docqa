@@ -112,3 +112,27 @@ def answer_reranked(
     chunks = rerank(question, candidats, scorer, k)
     prompt = build_prompt(question, chunks)
     return generate(prompt)
+
+
+def answer_with_sources(
+    question: str, collection, model, scorer, k: int = 3, pool: int = 20
+) -> dict:
+    if k <= 0:
+        raise ValueError("k must be positive.")
+    if pool < k:
+        raise ValueError("pool must be greater or equal to k.")
+    candidats = retrieve_chunks_hybrid(
+        question, collection, model, k=pool, pool=pool
+    )
+    if len(candidats) == 0:
+        return {"answer": "I don't know.", "sources": []}
+    chunks = rerank(question, candidats, scorer, k)
+    prompt = build_prompt(question, chunks)
+    seen = set()
+    sources = list()
+    items = [(c.source, c.page) for c in chunks]
+    for _item in items:
+        if _item not in seen:
+            seen.add(_item)
+            sources.append({"source": _item[0], "page": _item[1]})
+    return {"answer": generate(prompt), "sources": sources}

@@ -1,7 +1,9 @@
+import os
+
 import requests
 
 MODEL = "qwen2.5:3b"
-URL = "http://localhost:11434/api/generate"
+URL = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
 TIMEOUT = 120
 
 
