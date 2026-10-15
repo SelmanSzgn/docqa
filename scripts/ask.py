@@ -4,11 +4,11 @@ import sys
 import chromadb
 
 from docqa.embeddings import load_model
-from docqa.pipeline import answer_from_store
+from docqa.pipeline import answer_reranked
+from docqa.reranker import load_scorer
 
-size = 1000
-overlap = 200
-k = 3
+pool = 20
+k = 5
 
 parser = argparse.ArgumentParser()
 parser.add_argument("question")
@@ -22,5 +22,6 @@ if collection.count() == 0:
     sys.exit("No documents ingested yet. Run scripts/ingest.py first.")
 
 model = load_model()
+scorer = load_scorer()
 
-print(answer_from_store(question, collection, model, k))
+print(answer_reranked(question, collection, model, scorer, k=k, pool=pool))

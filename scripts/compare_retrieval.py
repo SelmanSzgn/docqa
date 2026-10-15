@@ -1,4 +1,3 @@
-
 import chromadb
 
 from docqa.embeddings import load_model
