@@ -7,7 +7,7 @@ URL = (
     os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
     or "http://localhost:11434/api/generate"
 )
-TIMEOUT = 120
+TIMEOUT = 300
 
 
 def generate(prompt: str) -> str:
